@@ -1,104 +1,162 @@
 "use client"
 
+import { useEffect, useState } from "react"
+import AOS from "aos"
+import "aos/dist/aos.css"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
+import { motion } from "framer-motion"
 
 export default function AboutPage() {
   const router = useRouter()
+  const [pegawai, setPegawai] = useState(0)
+  const [customer, setCustomer] = useState(0)
 
-  const testimonials = [
-    {
-      name: "Rina W.",
-      text: "Dimsum-nya enak banget, dan pelayanannya ramah. Selalu puas setiap datang!",
-    },
-    {
-      name: "Andi P.",
-      text: "Harga terjangkau tapi rasanya tetap premium. Recomended banget!",
-    },
-    {
-      name: "Siti H.",
-      text: "Circle Food jadi tempat favorit saya dan keluarga. Always halal & fresh!",
-    },
-  ]
+  useEffect(() => {
+    AOS.init({ duration: 1000, once: true })
+
+    // Counter Pegawai
+    let pegawaiStart = 0
+    const pegawaiEnd = 10
+    const pegawaiDuration = 2000
+    const pegawaiStep = Math.floor(pegawaiDuration / pegawaiEnd)
+    const pegawaiTimer = setInterval(() => {
+      pegawaiStart += 1
+      setPegawai(pegawaiStart)
+      if (pegawaiStart === pegawaiEnd) clearInterval(pegawaiTimer)
+    }, pegawaiStep)
+
+    // Counter Customer
+    let customerStart = 0
+    const customerEnd = 100
+    const customerDuration = 2000
+    const customerStep = Math.floor(customerDuration / customerEnd)
+    const customerTimer = setInterval(() => {
+      customerStart += 1
+      setCustomer(customerStart)
+      if (customerStart === customerEnd) clearInterval(customerTimer)
+    }, customerStep)
+
+    return () => {
+      clearInterval(pegawaiTimer)
+      clearInterval(customerTimer)
+    }
+  }, [])
 
   return (
-    <div className="min-h-screen bg-gray-50 relative font-sans">
+    <div className="min-h-screen bg-gradient-to-b from-gray-100 to-white text-gray-800">
       {/* Tombol Kembali */}
       <button
-        onClick={() => router.back()}
-        className="fixed top-6 left-6 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold px-4 py-2 rounded-lg shadow-md z-50"
+        onClick={() => router.push("/")}
+        className="fixed top-5 left-5 z-50 bg-black/80 text-white shadow-md px-4 py-2 rounded-xl hover:bg-black transition"
       >
         ← Kembali
       </button>
 
-      {/* Hero / Foto Owner */}
-      <section
-        className="w-full h-screen flex flex-col items-center justify-center bg-gradient-to-b from-yellow-200 via-yellow-100 to-white text-center px-6"
-        data-aos="fade-up"
-      >
-        <img
-          src="/owner.jpg"
-          alt="Owner Circle Food"
-          className="w-64 h-64 object-cover rounded-full shadow-2xl mb-6"
-        />
-        <h1 className="text-5xl font-bold text-gray-900 mb-4">Circle Food</h1>
-        <p className="text-gray-700 text-lg max-w-2xl">
-          Circle Food hadir untuk memberikan pengalaman kuliner terbaik dengan berbagai pilihan dimsum
-          & street food halal. Kami selalu menggunakan bahan-bahan berkualitas dan menjaga cita rasa autentik.
+      {/* Hero Owner */}
+      <section className="flex flex-col items-center justify-center text-center px-6 pt-20">
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.8 }}
+        >
+          <Image
+            src="/owner.jpg"
+            alt="Owner Circle Food"
+            width={200}
+            height={200}
+            className="rounded-full shadow-2xl border-4 border-blue-500"
+          />
+        </motion.div>
+        <h1 className="text-3xl font-bold mt-6 text-blue-700">
+          Founder & Owner Circle Food
+        </h1>
+        <p className="text-gray-600 max-w-2xl mt-3">
+          Circle Food didirikan oleh <span className="font-semibold">Nuryani</span>, 
+          seorang pengusaha muda dengan visi menghadirkan makanan berkualitas, sehat, 
+          dan terjangkau untuk semua kalangan.
         </p>
       </section>
 
-      {/* Visi & Misi */}
-      <section className="py-24 bg-white text-center px-6" data-aos="fade-up">
-        <h2 className="text-4xl font-semibold mb-8">Visi & Misi</h2>
-        <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-12">
-          <div className="bg-yellow-50 p-8 rounded-2xl shadow-md">
-            <h3 className="text-2xl font-bold mb-3">Visi</h3>
-            <p>Menyediakan dimsum & street food halal terbaik dengan kualitas premium dan harga terjangkau.</p>
-          </div>
-          <div className="bg-yellow-50 p-8 rounded-2xl shadow-md">
-            <h3 className="text-2xl font-bold mb-3">Misi</h3>
-            <ul className="list-disc list-inside space-y-2 text-left">
-              <li>Selalu menggunakan bahan-bahan berkualitas.</li>
-              <li>Menyajikan makanan yang lezat dan sehat.</li>
-              <li>Mengutamakan pelayanan ramah dan cepat.</li>
-              <li>Menjaga kepuasan pelanggan sebagai prioritas utama.</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      {/* Sejarah / Cerita */}
-      <section className="py-24 bg-gray-100 text-center px-6" data-aos="fade-up">
-        <h2 className="text-4xl font-semibold mb-8">Cerita Kami</h2>
-        <p className="max-w-3xl mx-auto text-gray-700 text-lg leading-relaxed">
-          Circle Food berdiri dengan tujuan menghadirkan makanan halal yang lezat dan berkualitas
-          untuk semua kalangan. Berawal dari usaha kecil, kini Circle Food menjadi pilihan utama
-          untuk dimsum & street food di kota kami, dengan reputasi yang terus berkembang.
-        </p>
-      </section>
-
-      {/* Testimoni */}
-      <section className="py-24 bg-white text-center px-6" data-aos="fade-up">
-        <h2 className="text-4xl font-semibold mb-12">Apa Kata Pelanggan?</h2>
-        <div className="max-w-5xl mx-auto grid md:grid-cols-3 gap-8">
-          {testimonials.map((t, i) => (
+      {/* Sejarah */}
+      <section className="mt-16 px-6">
+        <h2 className="text-2xl font-bold text-center mb-10 text-blue-700">
+          Sejarah Circle Food
+        </h2>
+        <div className="space-y-6 max-w-3xl mx-auto">
+          {[
+            { year: "2020", text: "Circle Food pertama kali berdiri sebagai usaha kecil rumahan." },
+            { year: "2021", text: "Mulai membuka cabang pertama dan memperluas menu." },
+            { year: "2023", text: "Circle Food berhasil memiliki 50+ pegawai dan loyal customer." },
+          ].map((item, i) => (
             <div
               key={i}
-              className="bg-yellow-50 p-6 rounded-2xl shadow-md text-gray-800"
               data-aos="fade-up"
-              data-aos-delay={i * 150}
+              className="bg-white shadow-md rounded-xl p-6 flex items-start space-x-4 border-l-4 border-gradient-to-r from-yellow-400 to-red-500"
             >
-              <p className="mb-4">&quot;{t.text}&quot;</p>
-              <h4 className="font-bold">{t.name}</h4>
+              <span className="bg-gradient-to-r from-yellow-400 to-red-500 text-white px-3 py-1 rounded-full font-bold">
+                {item.year}
+              </span>
+              <p className="text-gray-700">{item.text}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-12 bg-gray-200 text-center px-6">
-        <p className="text-gray-700">&copy; {new Date().getFullYear()} Circle Food. All rights reserved.</p>
-      </footer>
+      {/* Counter Section */}
+      <section className="mt-20 text-center px-6">
+        <h2 className="text-2xl font-bold mb-10 text-blue-700">Circle Food dalam Angka</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-3xl mx-auto">
+          {/* Pegawai */}
+          <motion.div
+            data-aos="fade-up"
+            whileHover={{ scale: 1.05 }}
+            className="bg-white shadow-lg rounded-xl p-8"
+          >
+            <p className="text-5xl font-extrabold bg-gradient-to-r from-yellow-400 to-red-500 bg-clip-text text-transparent">
+              {pegawai}+
+            </p>
+            <p className="text-gray-600 mt-2">Pegawai Berdedikasi</p>
+          </motion.div>
+
+          {/* Customers */}
+          <motion.div
+            data-aos="fade-up"
+            data-aos-delay="200"
+            whileHover={{ scale: 1.05 }}
+            className="bg-white shadow-lg rounded-xl p-8"
+          >
+            <p className="text-5xl font-extrabold bg-gradient-to-r from-yellow-400 to-red-500 bg-clip-text text-transparent">
+              {customer}+
+            </p>
+            <p className="text-gray-600 mt-2">Pelanggan Puas</p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Testimoni */}
+      <section className="mt-20 px-6 pb-20">
+        <h2 className="text-2xl font-bold text-center mb-10 text-blue-700">
+          Testimoni Customer
+        </h2>
+        <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          {[
+            { name: "Sarah", text: "Makanannya enak banget, harganya terjangkau!" },
+            { name: "Andi", text: "Circle Food selalu jadi pilihan utama keluarga saya." },
+            { name: "Lisa", text: "Pelayanan cepat, kualitas makanan top!" },
+          ].map((testi, i) => (
+            <motion.div
+              key={i}
+              data-aos="zoom-in"
+              className="bg-white shadow-lg rounded-xl p-6 text-center border border-gray-200"
+              whileHover={{ scale: 1.05 }}
+            >
+              <p className="italic text-gray-700">"{testi.text}"</p>
+              <h4 className="mt-4 font-bold text-blue-700">{testi.name}</h4>
+            </motion.div>
+          ))}
+        </div>
+      </section>
     </div>
   )
 }
