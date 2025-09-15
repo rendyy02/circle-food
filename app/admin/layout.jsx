@@ -83,60 +83,67 @@ export default function AdminLayout({ children }) {
         </button>
       </aside>
 
-      {/* Sidebar (mobile overlay) */}
-      {sidebarOpen && (
-        <div className="fixed inset-0 z-50 flex">
-          {/* Overlay */}
-          <div
-            className="fixed inset-0 bg-black/50"
-            onClick={() => setSidebarOpen(false)}
-          ></div>
+      {/* Sidebar (mobile overlay with animation) */}
+      <div
+        className={`fixed inset-0 z-50 flex md:hidden transition-opacity duration-300 ${
+          sidebarOpen ? "opacity-100 visible" : "opacity-0 invisible"
+        }`}
+      >
+        {/* Overlay */}
+        <div
+          className="fixed inset-0 bg-black/50"
+          onClick={() => setSidebarOpen(false)}
+        ></div>
 
-          <aside className="relative z-50 w-64 bg-gray-900 text-white p-6 flex flex-col">
-            <div className="flex items-center justify-between mb-8">
-              <div className="flex items-center gap-3">
-                <img
-                  src="/logo.png"
-                  alt="Logo"
-                  className="w-10 h-10 rounded-full"
-                />
-                <h2 className="text-2xl font-bold">Admin Panel</h2>
-              </div>
-              <button onClick={() => setSidebarOpen(false)}>
-                <X size={28} />
-              </button>
+        {/* Sidebar sliding */}
+        <aside
+          className={`relative z-50 w-64 bg-gray-900 text-white p-6 flex flex-col transform transition-transform duration-300 ${
+            sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+        >
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-3">
+              <img
+                src="/logo.png"
+                alt="Logo"
+                className="w-10 h-10 rounded-full"
+              />
+              <h2 className="text-2xl font-bold">Admin Panel</h2>
             </div>
-            <nav className="flex-1">
-              <ul className="space-y-4">
-                <li>
-                  <a
-                    href="/admin"
-                    className="block py-2 px-3 rounded-lg hover:bg-gray-800 transition"
-                    onClick={() => setSidebarOpen(false)}
-                  >
-                    Dashboard
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/admin/products"
-                    className="block py-2 px-3 rounded-lg hover:bg-gray-800 transition"
-                    onClick={() => setSidebarOpen(false)}
-                  >
-                    Produk
-                  </a>
-                </li>
-              </ul>
-            </nav>
-            <button
-              onClick={handleLogout}
-              className="mt-6 flex items-center gap-2 bg-gradient-to-r from-red-500 to-red-700 px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition"
-            >
-              <LogOut size={18} /> Logout
+            <button onClick={() => setSidebarOpen(false)}>
+              <X size={28} />
             </button>
-          </aside>
-        </div>
-      )}
+          </div>
+          <nav className="flex-1">
+            <ul className="space-y-4">
+              <li>
+                <a
+                  href="/admin"
+                  className="block py-2 px-3 rounded-lg hover:bg-gray-800 transition"
+                  onClick={() => setSidebarOpen(false)}
+                >
+                  Dashboard
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/admin/products"
+                  className="block py-2 px-3 rounded-lg hover:bg-gray-800 transition"
+                  onClick={() => setSidebarOpen(false)}
+                >
+                  Produk
+                </a>
+              </li>
+            </ul>
+          </nav>
+          <button
+            onClick={handleLogout}
+            className="mt-6 flex items-center gap-2 bg-gradient-to-r from-red-500 to-red-700 px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition"
+          >
+            <LogOut size={18} /> Logout
+          </button>
+        </aside>
+      </div>
 
       {/* Topbar (mobile) */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-gray-900 text-white flex items-center justify-between px-4 py-3 shadow-md">
