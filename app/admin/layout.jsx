@@ -1,160 +1,80 @@
 "use client"
-
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { supabase } from "@/utils/supabase/client"
-import { LogOut, Menu, X } from "lucide-react"
+import { useState } from "react";
+import { LayoutDashboard, Package, LogOut, Menu, X } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function AdminLayout({ children }) {
-  const [loading, setLoading] = useState(true)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-  const router = useRouter()
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const pathname = usePathname();
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session) {
-        router.push("/login")
-        return
-      }
-
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", session.user.id)
-        .single()
-
-      if (profile?.role !== "admin") {
-        router.push("/")
-        return
-      }
-
-      setLoading(false)
-    }
-    checkAuth()
-  }, [router])
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut()
-    router.push("/login")
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        Loading...
-      </div>
-    )
-  }
+  const menuItems = [
+    { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
+    { label: "Products", href: "/admin/products", icon: Package },
+  ];
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      {/* Sidebar (desktop) */}
-      <aside className="hidden md:flex w-64 bg-gray-900/95 backdrop-blur-md text-white p-6 flex-col">
-        <div className="flex items-center gap-3 mb-8">
-          <img src="/logo.png" alt="Logo" className="w-10 h-10 rounded-full" />
-          <h2 className="text-2xl font-bold">Admin Panel</h2>
+    <div className="flex min-h-screen bg-[#F8FAFC]">
+      {/* Mobile Overlay */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 md:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside className={`
+        fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0
+        ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
+      `}>
+        <div className="p-6 border-b border-slate-100 flex justify-between items-center">
+          <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            Circle Food
+          </h2>
+          <button className="md:hidden p-1" onClick={() => setIsSidebarOpen(false)}>
+            <X size={20} />
+          </button>
         </div>
-        <nav className="flex-1">
-          <ul className="space-y-4">
-            <li>
-              <a
-                href="/admin"
-                className="block py-2 px-3 rounded-lg hover:bg-gray-800 transition"
-              >
-                Dashboard
-              </a>
-            </li>
-            <li>
-              <a
-                href="/admin/products"
-                className="block py-2 px-3 rounded-lg hover:bg-gray-800 transition"
-              >
-                Produk
-              </a>
-            </li>
-          </ul>
+        
+        <nav className="flex-1 p-4 space-y-1">
+          {menuItems.map((item) => (
+            <Link 
+              key={item.href}
+              href={item.href} 
+              onClick={() => setIsSidebarOpen(false)}
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium ${
+                pathname === item.href 
+                ? "bg-blue-50 text-blue-600" 
+                : "text-slate-600 hover:bg-slate-50"
+              }`}
+            >
+              <item.icon size={20} /> {item.label}
+            </Link>
+          ))}
         </nav>
-        <button
-          onClick={handleLogout}
-          className="mt-6 flex items-center gap-2 bg-gradient-to-r from-red-500 to-red-700 px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition"
-        >
-          <LogOut size={18} /> Logout
-        </button>
+
+        <div className="p-4 border-t border-slate-100">
+          <button className="w-full flex items-center gap-3 px-4 py-3 text-red-500 hover:bg-red-50 rounded-xl transition-all font-medium">
+            <LogOut size={20} /> Sign Out
+          </button>
+        </div>
       </aside>
 
-      {/* Sidebar (mobile overlay with animation) */}
-      <div
-        className={`fixed inset-0 z-50 flex md:hidden transition-opacity duration-300 ${
-          sidebarOpen ? "opacity-100 visible" : "opacity-0 invisible"
-        }`}
-      >
-        {/* Overlay */}
-        <div
-          className="fixed inset-0 bg-black/50"
-          onClick={() => setSidebarOpen(false)}
-        ></div>
-
-        {/* Sidebar sliding */}
-        <aside
-          className={`relative z-50 w-64 bg-gray-900 text-white p-6 flex flex-col transform transition-transform duration-300 ${
-            sidebarOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
-        >
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-3">
-              <img
-                src="/logo.png"
-                alt="Logo"
-                className="w-10 h-10 rounded-full"
-              />
-              <h2 className="text-2xl font-bold">Admin Panel</h2>
-            </div>
-            <button onClick={() => setSidebarOpen(false)}>
-              <X size={28} />
-            </button>
-          </div>
-          <nav className="flex-1">
-            <ul className="space-y-4">
-              <li>
-                <a
-                  href="/admin"
-                  className="block py-2 px-3 rounded-lg hover:bg-gray-800 transition"
-                  onClick={() => setSidebarOpen(false)}
-                >
-                  Dashboard
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/admin/products"
-                  className="block py-2 px-3 rounded-lg hover:bg-gray-800 transition"
-                  onClick={() => setSidebarOpen(false)}
-                >
-                  Produk
-                </a>
-              </li>
-            </ul>
-          </nav>
-          <button
-            onClick={handleLogout}
-            className="mt-6 flex items-center gap-2 bg-gradient-to-r from-red-500 to-red-700 px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition"
-          >
-            <LogOut size={18} /> Logout
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Top Navbar Mobile Only */}
+        <header className="h-16 bg-white border-b border-slate-200 flex items-center px-6 md:hidden sticky top-0 z-30">
+          <button onClick={() => setIsSidebarOpen(true)} className="p-2 -ml-2 text-slate-600">
+            <Menu size={24} />
           </button>
-        </aside>
-      </div>
+          <span className="ml-4 font-bold text-slate-800">Admin Panel</span>
+        </header>
 
-      {/* Topbar (mobile) */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-gray-900 text-white flex items-center justify-between px-4 py-3 shadow-md">
-        <button onClick={() => setSidebarOpen(true)}>
-          <Menu size={28} />
-        </button>
-        <h1 className="font-bold text-lg">Admin Panel</h1>
+        <main className="flex-1 overflow-y-auto">
+          {children}
+        </main>
       </div>
-
-      {/* Konten */}
-      <main className="flex-1 p-6 md:p-10 mt-14 md:mt-0">{children}</main>
     </div>
-  )
+  );
 }

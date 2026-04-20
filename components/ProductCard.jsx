@@ -1,31 +1,54 @@
 "use client"
 
+import { ShoppingCart } from "lucide-react"
+
 export default function ProductCard({ product, index }) {
+  const formatHarga = (harga) => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+    }).format(harga)
+  }
+
   return (
     <div
-      className="bg-white border border-gray-300 rounded-2xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2 duration-300 overflow-hidden"
-      data-aos="zoom-in"
-      data-aos-delay={index * 150}
+      data-aos="fade-up"
+      data-aos-delay={index * 100}
+      className="bg-white dark:bg-slate-800 group rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-slate-100 dark:border-slate-700"
     >
-      <div className="relative">
+      {/* Container Gambar */}
+      <div className="relative h-36 md:h-52 overflow-hidden">
         <img
-          src={product.image_url || "/default-product.jpg"}
+          src={product.image_url || "/placeholder-food.jpg"}
           alt={product.name}
-          className="w-full h-56 object-cover"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
-        <span className="absolute top-3 left-3 bg-yellow-400 text-black px-3 py-1 rounded-full font-semibold shadow-md">
-          Rp {Number(product.price || 0).toLocaleString("id-ID")}
-        </span>
       </div>
-      <div className="p-6">
-        <h3 className="text-xl font-semibold mb-2 text-gray-900">
+
+      {/* Konten Card */}
+      <div className="p-3 md:p-5">
+        <h3 className="text-sm md:text-lg font-bold text-slate-900 dark:text-white mb-1 truncate">
           {product.name}
         </h3>
-        {product.description && (
-          <p className="text-gray-800 text-sm leading-relaxed">
-            {product.description}
-          </p>
-        )}
+        <p className="hidden md:block text-slate-500 dark:text-slate-400 text-xs mb-4 line-clamp-2 h-8">
+          {product.description || "Hidangan lezat khas Circle Food."}
+        </p>
+
+        <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between pt-2 md:pt-4 border-t border-slate-50 dark:border-slate-700">
+          <span className="text-sm md:text-xl font-black text-red-500 dark:text-red-400">
+            {formatHarga(product.price)}
+          </span>
+
+          <a
+            href={`https://wa.me/62895389942494?text=Halo, saya ingin pesan ${product.name}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex justify-center py-2 md:p-3 rounded-lg md:rounded-xl hover:bg-red-500 dark:hover:bg-red-500 dark:hover:text-white transition-colors"
+          >
+            <ShoppingCart size={18} className="md:w-5 md:h-5" />
+          </a>
+        </div>
       </div>
     </div>
   )
